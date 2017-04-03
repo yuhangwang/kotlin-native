@@ -11,16 +11,16 @@ buildscript {
     }
 }
 
-apply plugin: 'konan'
+apply plugin: 'kotlin-native'
 
-konanInterop {
+kotlinNativeInterop {
     libcurl {
         defFile 'libcurl.def'
         includeDirs '/usr/include', '/opt/local/include', '/usr/local/opt/curl/include', '.'
     }
 }
 
-konanArtifacts {
+kotlinNativeArtifacts {
     Curl {
         inputFiles project.fileTree('src')
         useInterop 'libcurl'
@@ -32,7 +32,7 @@ konanArtifacts {
 build {
     doLast {
         copy {
-            from compileKonanCurl.artifactPath
+            from compileNativeCurl.artifactPath
             into projectDir.canonicalPath
         }
     }

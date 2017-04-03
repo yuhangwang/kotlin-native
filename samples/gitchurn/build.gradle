@@ -11,17 +11,17 @@ buildscript {
     }
 }
 
-apply plugin: 'konan'
+apply plugin: 'kotlin-native'
 
 
-konanInterop {
+kotlinNativeInterop {
     libgit2 {
         defFile 'libgit2.def'
         includeDirs '/opt/local/include', '/usr/include', '/usr/local/include'
     }
 }
 
-konanArtifacts {
+kotlinNativeArtifacts {
     GitChurn {
         inputFiles project.fileTree('src')
         useInterop 'libgit2'
@@ -33,7 +33,7 @@ konanArtifacts {
 build {
     doLast {
         copy {
-            from compileKonanGitChurn.artifactPath
+            from compileNativeGitChurn.artifactPath
             into projectDir.canonicalPath
         }
     }
@@ -75,8 +75,8 @@ void dumpInteropTask(Task task) {
 
 task dumpParameters {
     doLast {
-        dumpCompilatioTask(konanArtifacts['GitChurn'].compilationTask)
-        dumpInteropTask(konanInterop['libgit2'].generateStubsTask)
-        dumpCompilatioTask(konanInterop['libgit2'].compileStubsTask)
+        dumpCompilatioTask(kotlinNativeArtifacts['GitChurn'].compilationTask)
+        dumpInteropTask(kotlinNativeInterop['libgit2'].generateStubsTask)
+        dumpCompilatioTask(kotlinNativeInterop['libgit2'].compileStubsTask)
     }
 }

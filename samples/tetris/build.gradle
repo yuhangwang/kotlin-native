@@ -16,9 +16,9 @@ buildscript {
     }
 }
 
-apply plugin: 'konan'
+apply plugin: 'kotlin-native'
 
-konanInterop {
+kotlinNativeInterop {
     sdlMacbook {
         defFile 'sdl.def'
         includeDirs '/Library/Frameworks/SDL2.framework/Headers', '/opt/local/include/SDL2', '/usr/local/include/SDL2', "${System.getProperty("user.home")}/Library/Frameworks/SDL2.framework/Headers"
@@ -47,7 +47,7 @@ konanInterop {
     }
 }
 
-konanArtifacts {
+kotlinNativeArtifacts {
     TetrisMacbook {
         inputFiles project.file('Tetris.kt')
         useInterop 'sdlMacbook'
@@ -89,7 +89,7 @@ konanArtifacts {
 build {
     doLast {
         getTaskDependencies().getDependencies().forEach() { task ->
-            if (task.name.startsWith("compileKonan")) {
+            if (task.name.startsWith("compileNative")) {
                 copy {
                     from task.artifactPath
                     into projectDir.canonicalPath

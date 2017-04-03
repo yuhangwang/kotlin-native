@@ -50,7 +50,7 @@ import java.io.File
 open class KonanCompilerConfig(
         val configName: String,
         val project: ProjectInternal,
-        taskNamePrefix: String = "compileKonan"): Named {
+        taskNamePrefix: String = "compileNative"): Named {
 
     override fun getName() = configName
 

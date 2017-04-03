@@ -11,15 +11,15 @@ buildscript {
     }
 }
 
-apply plugin: 'konan'
+apply plugin: 'kotlin-native'
 
-konanInterop {
+kotlinNativeInterop {
     sockets {
         defFile "sockets.def"
     }
 }
 
-konanArtifacts {
+kotlinNativeArtifacts {
     EchoServer {
         inputFiles project.file("EchoServer.kt")
         useInterop "sockets"
@@ -29,7 +29,7 @@ konanArtifacts {
 build {
     doLast {
         copy {
-            from compileKonanEchoServer.artifactPath
+            from compileNativeEchoServer.artifactPath
             into projectDir.canonicalPath
         }
     }

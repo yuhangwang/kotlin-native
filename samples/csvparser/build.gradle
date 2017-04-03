@@ -11,15 +11,15 @@ buildscript {
     }
 }
 
-apply plugin: 'konan'
+apply plugin: 'kotlin-native'
 
-konanInterop {
+kotlinNativeInterop {
     stdio {
         defFile 'stdio.def'
     }
 }
 
-konanArtifacts {
+kotlinNativeArtifacts {
     CsvParser {
         inputFiles project.file('CsvParser.kt')
         useInterop 'stdio'
@@ -29,7 +29,7 @@ konanArtifacts {
 build {
     doLast {
         copy {
-            from compileKonanCsvParser.artifactPath
+            from compileNativeCsvParser.artifactPath
             into projectDir.canonicalPath
         }
     }
@@ -71,8 +71,8 @@ void dumpInteropTask(Task task) {
 
 task dumpParameters {
     doLast {
-        dumpCompilatioTask(konanArtifacts['CsvParser'].compilationTask)
-        dumpInteropTask(konanInterop['stdio'].generateStubsTask)
-        dumpCompilatioTask(konanInterop['stdio'].compileStubsTask)
+        dumpCompilatioTask(kotlinNativeArtifacts['CsvParser'].compilationTask)
+        dumpInteropTask(kotlinNativeInterop['stdio'].generateStubsTask)
+        dumpCompilatioTask(kotlinNativeInterop['stdio'].compileStubsTask)
     }
 }

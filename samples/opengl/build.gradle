@@ -11,16 +11,16 @@ buildscript {
     }
 }
 
-apply plugin: 'konan'
+apply plugin: 'kotlin-native'
 
-konanInterop {
+kotlinNativeInterop {
     opengl {
         defFile 'opengl.def'
     }
 }
 
 
-konanArtifacts {
+kotlinNativeArtifacts {
     OpenGlTeapot {
         inputFiles project.file("OpenGlTeapot.kt")
         useInterop 'opengl'
@@ -38,7 +38,7 @@ konanArtifacts {
 build {
     doLast {
         copy {
-            from compileKonanOpenGlTeapot.artifactPath
+            from compileNativeOpenGlTeapot.artifactPath
             into projectDir.canonicalPath
         }
     }

@@ -17,20 +17,20 @@ a build script (see projects in `samples` directory):
        }
     }
 
-    apply plugin: 'konan'
+    apply plugin: 'kotlin-native'
 
 The plugin downloads the compiler during its first run. If you already downloaded the compiler manually you may specify
-the path to it using `konan.home` project property (e.g. in `gradle.properties`):
+the path to it using `kotlin-native.home` project property (e.g. in `gradle.properties`):
 
-    konan.home=/path/to/already/downloaded/compiler
+    kotlin-native.home=/path/to/already/downloaded/compiler
 
 In this case the compiler will not be downloaded by the plugin.
 
-To use the plugin you need to define artifacts you want to build in the `konanArtifacts` block. Here you can specify
+To use the plugin you need to define artifacts you want to build in the `kotlinNativeArtifacts` block. Here you can specify
 source files and compilation parameters (e.g. a target platform) for each artifact (see **Plugin DSL** section below for
 details).
 
-    konanArtifacts {
+    kotlinNativeArtifacts {
        foo {
            inputFiles = fileTree('foo/src')
        }
@@ -41,41 +41,41 @@ details).
        }
     }
 
-If you want to interact with native C libraries you need to define them in `konanInterop` block and add the defined
+If you want to interact with native C libraries you need to define them in `kotlinNativeInterop` block and add the defined
 interop in the artifact definition using `useInterop` method.
 
-    konanInterop {
+    kotlinNativeInterop {
        stdio {
            defFile 'stdio.def'
        }
     }
 
-    konanArtifacts {
+    kotlinNativeArtifacts {
        CsvParser {
            inputFiles project.file('CsvParser.kt')
            useInterop 'stdio'
        }
     }
 
-Each element in the `konanInterop` block creates a task for `cinterop` tool exection (see `INTEROP.md` to read more
+Each element in the `kotlinNativeInterop` block creates a task for `cinterop` tool exection (see `INTEROP.md` to read more
 about this tool) so you can specify `cinterop` parameters here (see **Plugin DSL** section below).
 
 You can get a task for Kotlin/Native compilation using `compilationTask` property of an artifact:
 
-      konanArtifacts['foo'].compilationTask
+      kotlinNativeArtifacts['foo'].compilationTask
 
 You can get a task for `cinterop` execution and a stub compilation task using `generateStubsTask` and `compileStubsTask`
 of an interop defined:
 
-    konanInterop['stdio'].generateStubsTask
-    konanInterop['stdio'].compileStubsTask
+    kotlinNativeInterop['stdio'].generateStubsTask
+    kotlinNativeInterop['stdio'].compileStubsTask
 
 All tasks contain a set of properties allowing one to obtain paths to artifacts built and paramters of compilation and
 cinterop execution (see the `dumpParameters` task in `samles/csvparser/build.gradle` for example).
 
 #### Plugin DSL
 
-     konanArtifacts {
+     kotlinNativeArtifacts {
          artifactName {
              // Source files
              inputFiles project.fileTree('src')
@@ -108,7 +108,7 @@ cinterop execution (see the `dumpParameters` task in `samles/csvparser/build.gra
         }
      }
 
-     konanInterop {
+     kotlinNativeInterop {
          interopName {
              defFile project.file("deffile.def")                    // Def-file for stub generation.
              pkg 'org.sample'                                       // Package to place stubs generated.
