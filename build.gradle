@@ -266,25 +266,24 @@ task crossDistRuntime(type: Copy) {
 
 targetList.each { target ->
     task("${target}CrossDistRuntime", type: Copy) {
-	dependsOn ":runtime:${target}Runtime"
-	dependsOn ":backend.native:${target}Stdlib"
-	dependsOn ":backend.native:${target}Start"
+        dependsOn ":runtime:${target}Runtime" 
+        dependsOn ":backend.native:${target}Stdlib" 
+        dependsOn ":backend.native:${target}Start" 
 
-	destinationDir file('dist')
+        destinationDir file('dist')
 
-	from(project(':runtime').file("build/$target")) {
-	    include("*.bc")
-	    into("klib/stdlib/$target/native")
-	}
-	from(project(':runtime').file("build/${target}Stdlib")) {
-	    include('**')
-	    into('klib/stdlib')
-	}
-	from(project(':runtime').file("build/${target}Start/$target/kotlin")) {
-	    include("program.kt.bc")
-	    rename('program.kt.bc', 'start.kt.bc')
-	    into("klib/stdlib/$target/native")
-	}
+        from(project(':runtime').file("build/$target")) {
+            include("*.bc")
+            into("klib/stdlib/$target/native")
+        }
+        from(project(':runtime').file("build/${target}Stdlib")) {
+            include('**')
+            into('klib/stdlib')
+        }
+        from(project(':runtime').file("build/${target}Start.bc")) {
+            rename("${target}Start.bc", 'start.bc')
+            into("klib/stdlib/$target/native")
+        }
     }
 }
 
@@ -336,7 +335,7 @@ task bundle(type: Tar) {
 task demo(type: Exec) {
     dependsOn 'dist'
 
-    commandLine './dist/bin/konanc', 'backend.native/tests/runtime/collections/moderately_large_array.kt', '-o', 'build/demo.kexe'
+    commandLine './dist/bin/konanc', 'backend.native/tests/runtime/collections/moderately_large_array.kt', '-o', 'build/demo'
 }
 
 task clean {
