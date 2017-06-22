@@ -51,7 +51,6 @@ internal class SplitMetadataGenerator(override val libDir: File): SplitLibrarySc
 
     fun addLinkData(linkData: LinkData) {
 
-        val linkdataDir = File(libDir, "linkdata")
         val header = Properties()
         header.putAll(hashMapOf(
             "abi_version" to "${linkData.abiVersion}",

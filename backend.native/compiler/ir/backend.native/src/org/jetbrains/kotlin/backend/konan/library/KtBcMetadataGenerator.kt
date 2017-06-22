@@ -161,8 +161,6 @@ internal class KtBcMetadataGenerator(val llvmModule: LLVMModuleRef) {
     }
 
     fun addLinkData(linkData: LinkData) {
-        if (linkData == null) return
-
         val abiNode = metadataString("${linkData.abiVersion}")
         val moduleNameNode = metadataString(linkData.moduleName)
         val module = linkData.module
@@ -175,8 +173,8 @@ internal class KtBcMetadataGenerator(val llvmModule: LLVMModuleRef) {
 
         fragments.forEachIndexed { index, it ->
             val name = fragmentNames[index]
-            val dataNode = metadataString(it)
-            val kpackageArg = metadataNode(listOf(dataNode))
+            val stringNode = metadataString(it)
+            val kpackageArg = metadataNode(listOf(stringNode))
             emitModuleMetadata("kpackage:$name", kpackageArg)
         }
     }

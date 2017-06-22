@@ -35,7 +35,7 @@ interface KonanLibraryReader {
     fun moduleDescriptor(specifics: LanguageVersionSettings): ModuleDescriptorImpl
 }
 
-abstract open class FileBasedLibraryReader(
+abstract class FileBasedLibraryReader(
     val file: File, val currentAbiVersion: Int,
     val reader: MetadataReader): KonanLibraryReader {
 

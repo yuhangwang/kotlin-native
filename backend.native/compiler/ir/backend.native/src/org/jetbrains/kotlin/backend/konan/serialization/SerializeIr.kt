@@ -534,10 +534,10 @@ internal class IrSerializer(val context: Context,
 
     fun serializeIrField(field: IrField): KonanIr.IrProperty.IrField {
         val proto = KonanIr.IrProperty.IrField.newBuilder()
-        val field = field.initializer?.expression
-        if (field != null) {
+        val initializer = field.initializer?.expression
+        if (initializer != null) {
             proto.setInitializer(
-                serializeExpression(field))
+                serializeExpression(initializer))
         }
         return proto.build()
     }
@@ -551,7 +551,7 @@ internal class IrSerializer(val context: Context,
         return proto.build()
     }
 
-    fun serializeIrClass(clazz: IrClass): KonanIr.IrClass {
+    fun serializeIrClass(@Suppress("UNUSED_PARAMETER") clazz: IrClass): KonanIr.IrClass {
         val proto = KonanIr.IrClass.newBuilder()
 
         // TODO: As of now we get here only for anonymous local objects.
@@ -616,7 +616,7 @@ internal class IrSerializer(val context: Context,
         }
 
         if (!(declaration is IrVariable)) {
-            localDeclarationSerializer.popContext(descriptor)
+            localDeclarationSerializer.popContext()
         }
 
         if (descriptor != rootFunction) {
@@ -803,7 +803,7 @@ internal class IrDeserializer(val context: Context,
         return callable
     }
 
-    fun deserializeDelegatingConstructorCall(proto: KonanIr.IrDelegatingConstructorCall, start: Int, end: Int, type: KotlinType): IrDelegatingConstructorCall {
+    fun deserializeDelegatingConstructorCall(proto: KonanIr.IrDelegatingConstructorCall, start: Int, end: Int): IrDelegatingConstructorCall {
         val descriptor = deserializeDescriptor(proto.getDescriptor()) as ClassConstructorDescriptor
         val typeArgs = deserializeTypeMap(descriptor, proto.memberAccess.getTypeMap())
 
@@ -813,14 +813,14 @@ internal class IrDeserializer(val context: Context,
         return call
     }
 
-    fun deserializeEnumConstructorCall(proto: KonanIr.IrEnumConstructorCall, start: Int, end: Int, type: KotlinType): IrEnumConstructorCall {
+    fun deserializeEnumConstructorCall(proto: KonanIr.IrEnumConstructorCall, start: Int, end: Int): IrEnumConstructorCall {
         val descriptor = deserializeDescriptor(proto.getDescriptor()) as ClassConstructorDescriptor
         val call = IrEnumConstructorCallImpl(start, end, descriptor)
         deserializeMemberAccessCommon(call, proto.memberAccess)
         return call
     }
 
-    fun deserializeGetField(proto: KonanIr.IrGetField, start: Int, end: Int, type: KotlinType): IrGetField {
+    fun deserializeGetField(proto: KonanIr.IrGetField, start: Int, end: Int): IrGetField {
         val access = proto.fieldAccess
         val descriptor = deserializeDescriptor(access.getDescriptor()) as PropertyDescriptor
         val superQualifier = if (access.hasSuper()) {
@@ -833,14 +833,14 @@ internal class IrDeserializer(val context: Context,
         return IrGetFieldImpl(start, end, descriptor, receiver, null, superQualifier)
     }
 
-    fun deserializeGetValue(proto: KonanIr.IrGetValue, start: Int, end: Int, type: KotlinType): IrGetValue {
+    fun deserializeGetValue(proto: KonanIr.IrGetValue, start: Int, end: Int): IrGetValue {
         val descriptor = deserializeDescriptor(proto.descriptor) as ValueDescriptor
 
         // TODO: origin!
         return IrGetValueImpl(start, end, descriptor, null)
     }
 
-    fun deserializeGetEnumValue(proto: KonanIr.IrGetEnumValue, start: Int, end: Int, type: KotlinType): IrGetEnumValue {
+    fun deserializeGetEnumValue(proto: KonanIr.IrGetEnumValue, start: Int, end: Int): IrGetEnumValue {
         val type = deserializeKotlinType(proto.type)
         val descriptor = deserializeDescriptor(proto.descriptor) as ClassDescriptor
 
@@ -852,7 +852,7 @@ internal class IrDeserializer(val context: Context,
         return IrGetObjectValueImpl(start, end, type, descriptor)
     }
 
-    fun deserializeInstanceInitializerCall(proto: KonanIr.IrInstanceInitializerCall, start: Int, end: Int, type: KotlinType): IrInstanceInitializerCall {
+    fun deserializeInstanceInitializerCall(proto: KonanIr.IrInstanceInitializerCall, start: Int, end: Int): IrInstanceInitializerCall {
         val descriptor = deserializeDescriptor(proto.getDescriptor()) as ClassDescriptor
 
         return IrInstanceInitializerCallImpl(start, end, descriptor)
@@ -865,7 +865,7 @@ internal class IrDeserializer(val context: Context,
         return IrReturnImpl(start, end, type, descriptor, value)
     }
 
-    fun deserializeSetField(proto: KonanIr.IrSetField, start: Int, end: Int, type: KotlinType): IrSetField {
+    fun deserializeSetField(proto: KonanIr.IrSetField, start: Int, end: Int): IrSetField {
         val access = proto.fieldAccess
         val descriptor = deserializeDescriptor(access.getDescriptor()) as PropertyDescriptor
         val superQualifier = if (access.hasSuper()) {
@@ -879,7 +879,7 @@ internal class IrDeserializer(val context: Context,
         return IrSetFieldImpl(start, end, descriptor, receiver, value,  null, superQualifier)
     }
 
-    fun deserializeSetVariable(proto: KonanIr.IrSetVariable, start: Int, end: Int, type: KotlinType): IrSetVariable {
+    fun deserializeSetVariable(proto: KonanIr.IrSetVariable, start: Int, end: Int): IrSetVariable {
         val descriptor = deserializeDescriptor(proto.getDescriptor()) as VariableDescriptor
         val value = deserializeExpression(proto.getValue())
         return IrSetVariableImpl(start, end, descriptor, value, null)
@@ -1032,23 +1032,23 @@ internal class IrDeserializer(val context: Context,
             CONTINUE
                 -> deserializeContinue(proto.getContinue(), start, end, type)
             DELEGATING_CONSTRUCTOR_CALL
-                -> deserializeDelegatingConstructorCall(proto.delegatingConstructorCall, start, end, type)
+                -> deserializeDelegatingConstructorCall(proto.delegatingConstructorCall, start, end)
             GET_ENUM_VALUE
-                -> deserializeGetEnumValue(proto.getEnumValue, start, end, type)
+                -> deserializeGetEnumValue(proto.getEnumValue, start, end)
             GET_FIELD
-                -> deserializeGetField(proto.getField, start, end, type)
+                -> deserializeGetField(proto.getField, start, end)
             GET_OBJECT
                 -> deserializeGetObject(proto.getObject, start, end, type)
             GET_VALUE
-                -> deserializeGetValue(proto.getValue, start, end, type)
+                -> deserializeGetValue(proto.getValue, start, end)
             INSTANCE_INITIALIZER_CALL
-                -> deserializeInstanceInitializerCall(proto.instanceInitializerCall, start, end, type)
+                -> deserializeInstanceInitializerCall(proto.instanceInitializerCall, start, end)
             RETURN
                 -> deserializeReturn(proto.getReturn(), start, end, type)
             SET_FIELD
-                -> deserializeSetField(proto.setField, start, end, type)
+                -> deserializeSetField(proto.setField, start, end)
             SET_VARIABLE
-                -> deserializeSetVariable(proto.setVariable, start, end, type)
+                -> deserializeSetVariable(proto.setVariable, start, end)
             STRING_CONCAT
                 -> deserializeStringConcat(proto.stringConcat, start, end, type)
             THROW
